@@ -10,6 +10,15 @@ import java.util.*;
 
 
 public class Main {
+    private static final Map<Integer, String> TEMPLATES_HANGMAN = Map.of(
+    6, " +---+ \n |   | \n     | \n     | \n     | \n     | \n=========",
+    5, " +---+ \n |   | \n O   | \n     | \n     | \n     | \n=========",
+    4, " +---+ \n |   | \n O   | \n |   | \n     | \n     | \n=========",
+    3, " +---+ \n |   | \n O   | \n/|   | \n     | \n     | \n=========",
+    2, " +---+ \n |   | \n O   | \n/|\\  | \n     | \n     | \n=========",
+    1, " +---+ \n |   | \n O   | \n/|\\  | \n/    | \n     | \n=========",
+    0, " +---+ \n |   | \n O   | \n/|\\  | \n/ \\  | \n     | \n========="
+);
     private static final String MENU_TEXT = """
             Используйте русскую раскладку
             
@@ -37,7 +46,18 @@ public class Main {
         }
     }
     public static void clearConsole(){
-                System.out.flush();
+        try {
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            }
+            else{
+                for (int i = 0; i < 50; i++) {
+                    System.out.println();
+                }
+            }
+        } catch (IOException | InterruptedException ex) {
+            System.err.println("Очистка консоли не удалась: " + ex.getMessage());
+        }
     }
     public static char userInput(String charsetName){
         Scanner scanner = new Scanner(System.in, charsetName);
@@ -61,10 +81,14 @@ public class Main {
             return;
         }
 
-        System.out.println(getMaskedString(hiddenWord,guessedIndices));
 
         while (!TestForLose(lives) && !TestForVictory(hiddenWord,guessedIndices)){
+            clearConsole();
 
+            System.out.println(TEMPLATES_HANGMAN.get(lives));
+            System.out.println("ОСТАВШЕЕСЯ КОЛИЧЕСТВО ЖИЗНЕЙ " + lives);
+            System.out.println(getMaskedString(hiddenWord,guessedIndices));
+            
             Character entered = userInput("cp866");
 
             Set<Integer> indices = attempt(entered,hiddenWord);
@@ -77,8 +101,7 @@ public class Main {
                 else {
                     lives--;
                 }
-                System.out.println(getMaskedString(hiddenWord,guessedIndices));
-                System.out.println("ОСТАВШЕЕСЯ КОЛИЧЕСТВО ЖИЗНЕЙ " + lives);
+            
             }
             checkedCharacters.add(entered);
 
