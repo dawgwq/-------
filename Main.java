@@ -33,6 +33,9 @@ public class Main {
             
             У ВАС 6 ЖИЗНЕЙ
             """;
+
+
+    private static final String FILE_PATH = "words.txt";
     public static void main(String[] args) {
         startMenu();
     }
@@ -109,30 +112,31 @@ public class Main {
     }
 
     public static List<Character> selectWord() {
-        String filePath = "words.txt";
-
+        List<String> allWords = new ArrayList<>();
         try {
-            List<String> allWords = Files.readAllLines(Paths.get(filePath));
+            allWords = Files.readAllLines(Paths.get(FILE_PATH));
 
-            if (allWords.isEmpty()) {
-                System.out.println("Файл words.txt пуст");
-                return new ArrayList<>();
-            }
-
-            Random random = new Random();
-            int randomIndex = random.nextInt(allWords.size());
-
-            String randomWord = allWords.get(randomIndex).toLowerCase();
-            List<Character> hiddenWord = new ArrayList<>();
-            for (int i = 0; i < randomWord.length(); i++) {
-                hiddenWord.add(randomWord.charAt(i));
-            }
-            return hiddenWord;
         } catch (IOException ex) {
             clearConsole();
-            System.err.println("Ошибка в при выборе слова из файла" + ex.getMessage());
+            System.err.println("Ошибка в при выборе слова из файла " + ex.getMessage());
             return new ArrayList<>();
         }
+        
+        
+        if (allWords.isEmpty()) {
+            System.out.println("Файл words.txt пуст ");
+            return new ArrayList<>();
+        }
+
+        Random random = new Random();
+        int randomIndex = random.nextInt(allWords.size());
+
+        String randomWord = allWords.get(randomIndex).toLowerCase();
+        List<Character> hiddenWord = new ArrayList<>();
+        for (int i = 0; i < randomWord.length(); i++) {
+            hiddenWord.add(randomWord.charAt(i));
+        }
+        return hiddenWord;
     }
 
 
